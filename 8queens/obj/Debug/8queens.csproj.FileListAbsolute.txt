@@ -1,0 +1,1 @@
+c:\users\naim\documents\visual studio 2015\Projects\8queens\8queens\bin\Debug\8queens.exe.config
