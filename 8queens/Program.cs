@@ -12,11 +12,16 @@ namespace _8queens
     {
         static void Main(string[] args)
         {
+            List<string> tablo = new List<string>();
+            int totalTime = 0;
+            int totalMoves = 0;
+            int totalRestarts = 0;
+
             for (int i = 0; i < 35; i++)
             {
                 bool[,] board = initializeBoard(8); //initialize for 8x8 (8 queens)
 
-                int totalMoves = 0;
+                int Moves = 0;
                 int restartCount = 0;
                 Stopwatch stopwatch = new Stopwatch();
 
@@ -25,20 +30,34 @@ namespace _8queens
                 while (calculateCollisions(board) > 0)
                 {
                     applyHillClimbingAlgorithmToTheBoard(board);
-                    totalMoves++;
-                    if (totalMoves > 100) //if it stucks at the local minimum
+                    Moves++;
+                    if (Moves > 20) //if it stucks at the local minimum
                     {
                         board = initializeBoard(8); //random new board
-                        totalMoves = 0;
+                        Moves = 0;
                         restartCount++;
                     }
                 }
                 stopwatch.Stop();
-
-                Console.WriteLine(i + 1 + ") Total Moves: " + totalMoves + ", Restart Count: " + restartCount + ", Time elapsed: {0} ms", stopwatch.Elapsed.Milliseconds);
                 drawTheBoard(board);
-                Thread.Sleep(1000);
+                Console.WriteLine(i + 1 + ") Total Moves: " + Moves + ", Restart Count: " + restartCount + ", Time elapsed: {0} ms", stopwatch.Elapsed.Milliseconds);
+                tablo.Add(i + 1 + ") Total Moves: " + Moves + ", Restart Count: " + restartCount + ", Time elapsed:" + stopwatch.Elapsed.Milliseconds + " ms");
+
+                totalMoves += Moves;
+                totalTime += stopwatch.Elapsed.Milliseconds;
+                totalRestarts += restartCount;
+
+                Thread.Sleep(300); //to see the board
+                Console.Clear();
             }
+
+            foreach (String istatistik in tablo)
+            {
+                Console.WriteLine(istatistik);
+            }
+            Console.WriteLine("++Average Moves: " + totalMoves / 35 + ", Average Restarts: " + totalRestarts / 35 + ", Average Time: " + totalTime / 35 + " ms ");
+
+            Console.ReadKey();
         }
 
         // returns 2d array with specified size (if size=4, 2d array is 4 x 4 and there are 4 queens)
@@ -177,6 +196,11 @@ namespace _8queens
                 }
             }
             board[indexI, indexJ] = true;
+
+
+            drawTheBoard(board);
+            Console.WriteLine("Total Collisions: " + calculateCollisions(board));
+            Console.Clear();
         }
 
         static void drawTheBoard(bool[,] board)
