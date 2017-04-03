@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,45 +12,34 @@ namespace _8queens
     {
         static void Main(string[] args)
         {
-            //for (int i = 0; i < 35; i++)
-            //{
-
-            bool[,] board = initializeBoard(8); //initialize for 8x8 (8 queens)
-
-            int totalMoves = 0;
-
-            //int oldState = calculateCollisions(board);
-            //applyHillClimbingAlgorithmToTheBoard(board);
-            //int newState = calculateCollisions(board);
-
-            //if(newState <= oldState )
-            //{
-            //    totalMoves++;
-            //}
-
-            while (calculateCollisions(board) > 0)
+            for (int i = 0; i < 35; i++)
             {
-                applyHillClimbingAlgorithmToTheBoard(board);
-                totalMoves++;
-            }
+                bool[,] board = initializeBoard(8); //initialize for 8x8 (8 queens)
 
-            Console.WriteLine(totalMoves);
-            for (int k = 0; k < 8; k++)
-            {
-                for (int j = 0; j < 8; j++)
+                int totalMoves = 0;
+                int restartCount = 0;
+                Stopwatch stopwatch = new Stopwatch();
+
+                stopwatch.Start(); // Begin timing.
+
+                while (calculateCollisions(board) > 0)
                 {
-                    if (board[k, j] == true)
-                        Console.Write("+");
-                    else
-                        Console.Write("-");
+                    applyHillClimbingAlgorithmToTheBoard(board);
+                    totalMoves++;
+                    if (totalMoves > 100) //if it stucks at the local minimum
+                    {
+                        board = initializeBoard(8); //random new board
+                        totalMoves = 0;
+                        restartCount++;
+                    }
                 }
-                Console.WriteLine();
+                stopwatch.Stop();
+
+                Console.WriteLine(i + 1 + ") Total Moves: " + totalMoves + ", Restart Count: " + restartCount + ", Time elapsed: {0} ms", stopwatch.Elapsed.Milliseconds);
+                drawTheBoard(board);
+                Thread.Sleep(1000);
             }
-
-            Thread.Sleep(6000);
         }
-
-        //}
 
         // returns 2d array with specified size (if size=4, 2d array is 4 x 4 and there are 4 queens)
         static bool[,] initializeBoard(int size)
@@ -84,7 +74,7 @@ namespace _8queens
                 {
                     if (board[i, j] == true) // if there is a queen on that square
                     {
-                        //for (int z = j + 1; z < size; z++) //check the row //not necessary for this initialization
+                        //for (int z = j + 1; z < size; z++) //check the row //not necessary with this put-a-queen-to-each-row initialization
                         //{
                         //    if (board[i, z] == true)
                         //    {
@@ -187,6 +177,23 @@ namespace _8queens
                 }
             }
             board[indexI, indexJ] = true;
+        }
+
+        static void drawTheBoard(bool[,] board)
+        {
+            int size = Convert.ToInt32(Math.Sqrt(board.Length)); //if the board is 8x8, board.Length will be 64
+
+            for (int k = 0; k < size; k++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if (board[k, j] == true)
+                        Console.Write("O  ");
+                    else
+                        Console.Write("-  ");
+                }
+                Console.WriteLine();
+            }
         }
 
 
