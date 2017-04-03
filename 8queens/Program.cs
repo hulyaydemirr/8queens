@@ -11,17 +11,22 @@ namespace _8queens
     {
         static void Main(string[] args)
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 35; i++)
             {
 
                 bool[,] board = initializeBoard(8); //initialize for 8x8 (8 queens)
 
                 Console.WriteLine(calculateCollisions(board));
+
+                board = applyHillClimbingAlgorithmToTheBoard(board);
+
+
                 Thread.Sleep(1000);
             }
 
         }
 
+        // returns 2d array with specified size (if size=4, 2d array is 4 x 4 and there are 4 queens)
         static bool[,] initializeBoard(int size)
         {
             bool[,] board = new bool[size, size];
@@ -54,7 +59,7 @@ namespace _8queens
                 {
                     if (board[i, j] == true) // if there is a queen on that square
                     {
-                        //for (int z = j + 1; z < size; z++) //check the row
+                        //for (int z = j + 1; z < size; z++) //check the row //not necessary for this initialization
                         //{
                         //    if (board[i, z] == true)
                         //    {
@@ -68,7 +73,7 @@ namespace _8queens
                             if (board[z, j] == true)
                             {
                                 totalCollisions++;
-                                break;
+                                //break; //if indirect attacking does not count
                             }
                         }
 
@@ -77,7 +82,7 @@ namespace _8queens
                             if (board[i + z, j + z] == true)
                             {
                                 totalCollisions++;
-                                break;
+                                //break;
                             }
                         }
 
@@ -86,7 +91,7 @@ namespace _8queens
                             if (board[i - z, j + z] == true)
                             {
                                 totalCollisions++;
-                                break;
+                                //break;
                             }
                         }
 
@@ -97,7 +102,46 @@ namespace _8queens
 
         }
 
-        //static int calculateCollisions(bool[,] board)
+        static bool[,] applyHillClimbingAlgorithmToTheBoard(bool[,] board)
+        {
+            int size = Convert.ToInt32(Math.Sqrt(board.Length));
+            int[,] successors = new int[size, size];
+
+            for (int i = 0; i < size; i++)
+            {
+                //find the queen of the row first
+                int indexOfQueen = -1;
+                for (int j = 0; j < size; j++)
+                {
+                    if (board[i, j] == true)
+                    {
+                        indexOfQueen = j;
+                        board[i, j] = false;
+                    }
+                }
+                //try all the moves on the row and save collisions
+                for (int j = 0; j < size; j++)
+                {
+                    if (j != indexOfQueen)
+                    {
+                        board[i, j] = true;
+                        successors[i, j] = calculateCollisions(board);
+                        board[i, j] = false;
+                    }
+                    else
+                    {
+                        successors[i, j] = 999; //to ignore old position
+                    }
+                }
+                board[i, indexOfQueen] = true; //fixing the row to its first position
+            }
+
+
+
+            
+
+            return board;
+        }
 
 
     }
