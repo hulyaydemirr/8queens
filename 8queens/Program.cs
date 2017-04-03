@@ -11,20 +11,45 @@ namespace _8queens
     {
         static void Main(string[] args)
         {
-            for (int i = 0; i < 35; i++)
+            //for (int i = 0; i < 35; i++)
+            //{
+
+            bool[,] board = initializeBoard(8); //initialize for 8x8 (8 queens)
+
+            int totalMoves = 0;
+
+            //int oldState = calculateCollisions(board);
+            //applyHillClimbingAlgorithmToTheBoard(board);
+            //int newState = calculateCollisions(board);
+
+            //if(newState <= oldState )
+            //{
+            //    totalMoves++;
+            //}
+
+            while (calculateCollisions(board) > 0)
             {
-
-                bool[,] board = initializeBoard(8); //initialize for 8x8 (8 queens)
-
-                Console.WriteLine(calculateCollisions(board));
-
-                board = applyHillClimbingAlgorithmToTheBoard(board);
-
-
-                Thread.Sleep(1000);
+                applyHillClimbingAlgorithmToTheBoard(board);
+                totalMoves++;
             }
 
+            Console.WriteLine(totalMoves);
+            for (int k = 0; k < 8; k++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (board[k, j] == true)
+                        Console.Write("+");
+                    else
+                        Console.Write("-");
+                }
+                Console.WriteLine();
+            }
+
+            Thread.Sleep(6000);
         }
+
+        //}
 
         // returns 2d array with specified size (if size=4, 2d array is 4 x 4 and there are 4 queens)
         static bool[,] initializeBoard(int size)
@@ -102,7 +127,7 @@ namespace _8queens
 
         }
 
-        static bool[,] applyHillClimbingAlgorithmToTheBoard(bool[,] board)
+        static void applyHillClimbingAlgorithmToTheBoard(bool[,] board)
         {
             int size = Convert.ToInt32(Math.Sqrt(board.Length));
             int[,] successors = new int[size, size];
@@ -136,11 +161,32 @@ namespace _8queens
                 board[i, indexOfQueen] = true; //fixing the row to its first position
             }
 
+            //select lowest value of successors
+            int min = 998;
+            int indexI = -1;
+            int indexJ = -1;
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if (successors[i, j] < min)
+                    {
+                        min = successors[i, j];
+                        indexI = i;
+                        indexJ = j;
+                    }
+                }
+            }
 
-
-            
-
-            return board;
+            //make the move, remove queen of the row first and put the new one
+            for (int j = 0; j < size; j++)
+            {
+                if (board[indexI, j] == true)
+                {
+                    board[indexI, j] = false;
+                }
+            }
+            board[indexI, indexJ] = true;
         }
 
 
