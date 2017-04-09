@@ -69,7 +69,7 @@ namespace _8queens
 
             for (int i = 0; i < size; i++)
             {
-                int randomSquare = rnd.Next(8); //placing queen to a random square in the row
+                int randomSquare = rnd.Next(size); //placing queen to a random square in the row
                 for (int j = 0; j < size; j++)
                 {
                     if (j != randomSquare)
